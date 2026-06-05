@@ -105,6 +105,11 @@ async def require_auth(credentials: HTTPAuthorizationCredentials | None = Depend
     if credentials is None:
         raise HTTPException(status_code=401, detail="API key required. Get yours at https://guardianai-self.vercel.app")
 
+    # Demo key for dashboard testing
+    DEMO_KEY = os.environ.get("DEMO_API_KEY", "demo_key_guardianai_2026")
+    if credentials.credentials == DEMO_KEY:
+        return {"email": "demo@guardianai.io", "plan": "pro", "requests_used": 0, "requests_limit": 999999}
+
     is_valid, error_msg, record = verify_api_key(credentials.credentials)
     if not is_valid:
         raise HTTPException(status_code=401, detail=error_msg)

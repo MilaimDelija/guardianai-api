@@ -1,5 +1,5 @@
 """
-Vigil API Key Registration System.
+GuardianAI API Key Registration System.
 
 Handles:
 - API key generation
@@ -156,12 +156,12 @@ def send_api_key_email(email: str, name: str, api_key: str) -> bool:
 <div class="container">
   <div class="logo">
     <div class="logo-mark">V</div>
-    <span style="font-weight: 700; font-size: 18px;">Vigil</span>
+    <span style="font-weight: 700; font-size: 18px;">GuardianAI</span>
     <span style="font-size: 11px; color: #3d4f6e; font-family: monospace; margin-left: 4px;">by Neuronium Engineers</span>
   </div>
 
   <h1>Your API Key is ready, {name.split()[0]}</h1>
-  <p>Welcome to Vigil — the security layer built for AI. Your free tier API key is below.</p>
+  <p>Welcome to GuardianAI — the security layer built for AI. Your free tier API key is below.</p>
 
   <div class="key-box">
     <div class="key-label">API KEY</div>
@@ -203,7 +203,7 @@ def send_api_key_email(email: str, name: str, api_key: str) -> bool:
   <div class="footer">
     <p>Keep your API key secure. Never share it publicly.</p>
     <p style="margin-top: 8px;">
-      <a href="https://vigil-web-tau.vercel.app">Documentation</a> ·
+      <a href="https://guardianai-self.vercel.app">Documentation</a> ·
       <a href="https://github.com/MilaimDelija/vigil">GitHub</a> ·
       security@neuronium.io
     </p>
@@ -215,9 +215,9 @@ def send_api_key_email(email: str, name: str, api_key: str) -> bool:
 """
 
     body = json.dumps({
-        "from": "Vigil <onboarding@resend.dev>",
+        "from": "GuardianAI <onboarding@resend.dev>",
         "to": [email],
-        "subject": "Your Vigil API Key",
+        "subject": "Your GuardianAI API Key",
         "html": html,
     }).encode("utf-8")
 

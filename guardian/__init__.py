@@ -1,5 +1,5 @@
 """
-Vigil: AI Security Engine
+GuardianAI: AI Security Engine
 An open-source security layer for AI agents, LLMs, and autonomous systems.
 
 Developed by Neuronium Engineers

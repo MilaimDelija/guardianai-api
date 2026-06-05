@@ -1,5 +1,5 @@
 """
-Vigil REST API v0.2.0
+GuardianAI REST API v0.2.0
 The Security Layer Built for AI
 
 Endpoints:
@@ -34,7 +34,7 @@ from guardian.api.register import (
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-logger = logging.getLogger("vigil.api")
+logger = logging.getLogger("guardianai.api")
 
 _engine: GuardianEngine | None = None
 _groq_detector: GroqSemanticDetector | None = None
@@ -44,7 +44,7 @@ _groq_detector: GroqSemanticDetector | None = None
 async def lifespan(app: FastAPI):
     global _engine, _groq_detector
 
-    logger.info("Initializing Vigil engine...")
+    logger.info("Initializing GuardianAI engine...")
 
     # Setup database
     db_url = os.environ.get("DATABASE_URL", "")
@@ -78,15 +78,15 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning("GROQ_API_KEY not set — Layer 2 disabled")
 
-    logger.info("Vigil API ready")
+    logger.info("GuardianAI API ready")
     yield
     logger.info("Shutting down")
 
 
 app = FastAPI(
-    title="Vigil",
-    description="The Security Layer Built for AI — by Neuronium Engineers",
-    version="0.2.0",
+    title="GuardianAI",
+    description="The Security Layer for AI Systems — by Neuronium Engineers. Detects prompt injection, jailbreaks, and data leakage.",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
@@ -103,7 +103,7 @@ def get_engine() -> GuardianEngine:
 
 async def require_auth(credentials: HTTPAuthorizationCredentials | None = Depends(security)) -> dict:
     if credentials is None:
-        raise HTTPException(status_code=401, detail="API key required. Get yours at https://vigil-web-tau.vercel.app")
+        raise HTTPException(status_code=401, detail="API key required. Get yours at https://guardianai-self.vercel.app")
 
     is_valid, error_msg, record = verify_api_key(credentials.credentials)
     if not is_valid:
@@ -182,7 +182,7 @@ def _to_response(result: Any, layers: list[str]) -> ScanResponse:
 
 @app.post("/v1/register", status_code=201)
 async def register(req: RegisterRequest):
-    """Register for a free Vigil API key."""
+    """Register for a free GuardianAI API key."""
     email = req.email.lower().strip()
 
     try:
@@ -210,8 +210,8 @@ async def register(req: RegisterRequest):
 async def health():
     return {
         "status": "ok",
-        "service": "vigil",
-        "version": "0.2.0",
+        "service": "guardianai",
+        "version": "1.0.0",
         "layer1": "active",
         "layer2": "active" if _groq_detector else "disabled",
     }
@@ -220,8 +220,8 @@ async def health():
 @app.get("/v1/info")
 async def info(user: dict = Depends(require_auth)):
     return {
-        "service": "Vigil — The Security Layer Built for AI",
-        "version": "0.2.0",
+        "service": "GuardianAI — The Security Layer Built for AI",
+        "version": "1.0.0",
         "plan": user["plan"],
         "requests_used": user["requests_used"],
         "requests_limit": user["requests_limit"],

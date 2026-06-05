@@ -1,13 +1,13 @@
 services:
   - type: web
-    name: vigil-api
+    name: guardianai-api
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -e .
     startCommand: uvicorn guardian.api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GROQ_API_KEY
         sync: false
-      - key: VIGIL_API_KEYS
+      - key: DATABASE_URL
         sync: false
-      - key: VIGIL_ENV
-        value: production
+      - key: RESEND_API_KEY
+        sync: false

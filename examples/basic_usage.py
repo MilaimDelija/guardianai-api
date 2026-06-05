@@ -1,5 +1,5 @@
 """
-Vigil — Basic Usage Examples
+GuardianAI — Basic Usage Examples
 
 Run from the vigil root directory:
     python examples/basic_usage.py
@@ -85,6 +85,6 @@ if __name__ == "__main__":
     demo_output_filtering()
     demo_result_serialization()
     print("\n" + "=" * 60)
-    print("Vigil v0.1.0 — Neuronium Engineers")
+    print("GuardianAI v0.1.0 — Neuronium Engineers")
     print("https://github.com/neuronium/vigil")
     print("=" * 60 + "\n")

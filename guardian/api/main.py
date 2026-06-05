@@ -51,6 +51,8 @@ async def lifespan(app: FastAPI):
     if db_url:
         try:
             setup_database()
+            from guardian.api.register import setup_users_table
+            setup_users_table()
         except Exception as e:
             logger.warning(f"Database setup failed: {e}")
     else:

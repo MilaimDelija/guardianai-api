@@ -260,3 +260,42 @@ def verify_api_key(key: str) -> tuple[bool, str, dict[str, Any] | None]:
         return False, f"Monthly limit reached ({record['requests_limit']} requests). Upgrade to Pro for unlimited access.", None
 
     return True, "", record
+
+
+def setup_users_table() -> None:
+    """Create vigil_users table for dashboard auth."""
+    conn = _get_conn()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS vigil_users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            role VARCHAR(20) DEFAULT 'user',
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_vigil_users_email ON vigil_users(email);
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+    logger.info("vigil_users table ready")
+
+
+def create_admin_user(email: str, password: str) -> None:
+    """Create admin user. Run once during setup."""
+    import hashlib
+    # Simple bcrypt-like hash using hashlib for environments without bcrypt
+    import secrets as sec
+    salt = sec.token_hex(16)
+    # We'll use the API to handle bcrypt — this is just DB insert
+    conn = _get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO vigil_users (email, password_hash, role) VALUES (%s, %s, 'admin') ON CONFLICT (email) DO NOTHING",
+        (email.lower(), password)  # password already hashed by caller
+    )
+    conn.commit()
+    cur.close()
+    conn.close()

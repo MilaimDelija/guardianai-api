@@ -215,7 +215,7 @@ def send_api_key_email(email: str, name: str, api_key: str) -> bool:
 """
 
     body = json.dumps({
-        "from": "Vigil <vigil@neuronium.io>",
+        "from": "Vigil <onboarding@resend.dev>",
         "to": [email],
         "subject": "Your Vigil API Key",
         "html": html,

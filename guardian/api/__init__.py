@@ -1,1 +1,3 @@
-# REST API proxy — coming in v0.2.0
+from guardian.api.main import app
+
+__all__ = ["app"]

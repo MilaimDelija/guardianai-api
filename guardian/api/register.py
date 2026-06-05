@@ -245,10 +245,19 @@ def send_api_key_email(email: str, name: str, api_key: str) -> bool:
 def verify_api_key(key: str) -> tuple[bool, str, dict[str, Any] | None]:
     """
     Verify an API key for request authentication.
+    Supports both legacy vgl- keys and new gai_live_ keys.
 
     Returns: (is_valid, error_message, record)
     """
-    if not key or not key.startswith("vgl-"):
+    if not key:
+        return False, "API key required", None
+
+    # New format: gai_live_ keys stored as SHA-256 hash in api_keys table
+    if key.startswith("gai_live_"):
+        return verify_new_api_key(key)
+
+    # Legacy format: vgl- keys
+    if not key.startswith("vgl-"):
         return False, "Invalid API key format", None
 
     record = get_key_record(key)
@@ -257,9 +266,49 @@ def verify_api_key(key: str) -> tuple[bool, str, dict[str, Any] | None]:
     if not record["is_active"]:
         return False, "API key is disabled", None
     if record["requests_used"] >= record["requests_limit"]:
-        return False, f"Monthly limit reached ({record['requests_limit']} requests). Upgrade to Pro for unlimited access.", None
+        return False, f"Monthly limit reached ({record['requests_limit']} requests). Upgrade your plan for more access.", None
 
     return True, "", record
+
+
+def verify_new_api_key(key: str) -> tuple[bool, str, dict[str, Any] | None]:
+    """Verify gai_live_ keys from the new api_keys table (SHA-256 hashed)."""
+    import hashlib
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
+    try:
+        conn = _get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, name, plan, scans_used, scans_limit, is_active FROM api_keys WHERE key_hash = %s LIMIT 1",
+            (key_hash,)
+        )
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not row:
+            return False, "API key not found", None
+        if not row[5]:
+            return False, "API key is revoked", None
+        if row[3] >= row[4]:
+            return False, f"Scan limit reached ({row[4]}). Upgrade your plan.", None
+        # Update last_used_at and increment scans_used
+        conn = _get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE api_keys SET scans_used = scans_used + 1, last_used_at = NOW() WHERE key_hash = %s",
+            (key_hash,)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True, "", {
+            "key": key_hash, "email": "", "name": row[1],
+            "plan": row[2], "requests_used": row[3],
+            "requests_limit": row[4], "is_active": row[5],
+        }
+    except Exception as e:
+        logger.error(f"verify_new_api_key error: {e}")
+        return False, "Database error", None
 
 
 def setup_users_table() -> None:

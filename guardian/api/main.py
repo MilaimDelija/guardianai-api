@@ -106,7 +106,7 @@ async def require_auth(credentials: HTTPAuthorizationCredentials | None = Depend
         raise HTTPException(status_code=401, detail="API key required. Get yours at https://guardianai-self.vercel.app")
 
     # Demo key for dashboard testing
-    DEMO_KEY = os.environ.get("DEMO_API_KEY", "demo_key_guardianai_2026")
+    DEMO_KEY = os.environ.get("DEMO_API_KEY", "demo_key_guardianai_2026")  # Remove after Stripe is live
     if credentials.credentials == DEMO_KEY:
         return {"email": "demo@guardianai.io", "plan": "pro", "requests_used": 0, "requests_limit": 999999}
 

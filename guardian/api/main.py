@@ -281,7 +281,7 @@ async def scan_output(
         "threat_level": result.threat_level.value,
         "threat_count": result.threat_count,
         "scan_duration_ms": result.scan_duration_ms,
-        "threats": [{"threat_type": t.threat_type.value, "level": t.level.value, "confidence": t.confidence, "description": t.description} for t in result.threats],
+        "threats": [{"type": t.threat_type.value, "threat_type": t.threat_type.value, "level": t.level.value, "confidence": t.confidence, "description": t.description} for t in result.threats],
         "text": processed,
         "was_redacted": req.auto_redact and not result.is_safe,
     }

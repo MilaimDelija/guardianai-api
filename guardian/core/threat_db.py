@@ -240,10 +240,10 @@ PII_PATTERNS: list[ThreatPattern] = [
         level=ThreatLevel.CRITICAL,
         description="Potential API key or secret token in output",
         regex=_compile(
-            r"(sk-[a-zA-Z0-9]{20,}|"             # OpenAI-style
-            r"Bearer\s+[a-zA-Z0-9\-_\.]{20,}|"   # Bearer tokens
+            r"(sk-[a-zA-Z0-9-]{8,}|"             # OpenAI-style
+            r"Bearer\s+[a-zA-Z0-9\-_\.]{8,}|"   # Bearer tokens
             r"[A-Za-z0-9+/]{40,}={0,2}|"          # Base64 secrets
-            r"[0-9a-fA-F]{32,})"                   # Hex tokens
+            r"[0-9a-fA-F]{16,})"                   # Hex tokens
         ),
         confidence_base=0.80,
         tags=["api_key", "secret", "token"],
@@ -284,8 +284,8 @@ SENSITIVE_DATA_PATTERNS: list[ThreatPattern] = [
         level=ThreatLevel.HIGH,
         description="Password or credential in plaintext",
         regex=_compile(
-            r"(password\s*[:=]\s*\S+|"
-            r"passwd\s*[:=]\s*\S+|"
+            r"(password\s*[:=\s]\s*\S+|"
+            r"passwd\s*[:=\s]\s*\S+|"
             r"pwd\s*[:=]\s*\S+|"
             r"secret\s*[:=]\s*\S+|"
             r"credentials?\s*[:=]\s*\S+)"
